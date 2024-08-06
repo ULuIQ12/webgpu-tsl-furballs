@@ -1,15 +1,12 @@
 
 // @ts-nocheck
-
-
 import { IAnimatedElement } from "../interfaces/IAnimatedElement";
-import { color, loop, cond, float, If, instanceIndex, int, min, mix, mx_fractal_noise_float, SpriteNodeMaterial, storage, StorageBufferAttribute, StorageInstancedBufferAttribute, timerDelta, tslFn, uniform, uv, vec3, WebGPURenderer, vec2, sin, cos, MeshStandardNodeMaterial, PI2, gain, timerLocal, step, smoothstep, abs, sub, mul, normalView, normalLocal, normalGeometry, texture, atan2, PI, positionLocal, max, MeshSSSPhysicalNodeMaterial, pow, RGBA_ASTC_4x4_Format, MultiplyBlending, positionWorld, discard } from "three/webgpu";
-import { AmbientLight, BufferGeometry, Color, DirectionalLight, DirectionalLightHelper, DirectionalLightShadow, DynamicDrawUsage, EquirectangularReflectionMapping,Group, IcosahedronGeometry, InstancedMesh, Mesh, MeshBasicMaterial, MeshStandardMaterial, PCFSoftShadowMap, PerspectiveCamera, Plane, PlaneGeometry, RepeatWrapping, Scene, SpotLight, TextureLoader, Vector3 } from "three/webgpu";
+import { color, loop, cond, float, If, instanceIndex, int, min, mix, mx_fractal_noise_float, storage, StorageBufferAttribute, StorageInstancedBufferAttribute, timerDelta, tslFn, uniform, uv, vec3, WebGPURenderer, vec2, sin, cos, MeshStandardNodeMaterial, PI2, smoothstep, abs, sub, mul, texture, atan2, PI, pow, MultiplyBlending, positionWorld } from "three/webgpu";
+import { BufferGeometry, DirectionalLight, DirectionalLightShadow, EquirectangularReflectionMapping, IcosahedronGeometry, Mesh, PerspectiveCamera, Plane, PlaneGeometry, RepeatWrapping, Scene, TextureLoader, Vector3 } from "three/webgpu";
 import GUI from "three/examples/jsm/libs/lil-gui.module.min.js";
 import { Root } from "../Root";
-import { BufferGeometryUtils, GroundedSkybox, OrbitControls, RGBELoader } from "three/examples/jsm/Addons.js";
+import { BufferGeometryUtils, GroundedSkybox, OrbitControls, UltraHDRLoader } from "three/examples/jsm/Addons.js";
 import { Pointer } from "../utils/Pointer";
-import MeshSSSNodeMaterial from "three/src/nodes/materials/MeshSSSNodeMaterial.js";
 
 
 export class Furballs implements IAnimatedElement {
@@ -41,20 +38,11 @@ export class Furballs implements IAnimatedElement {
 	skyTexture:Texture;
 	async init() {
 
-		
-		
-		
-
-		
-		// load the bg / envmap // https://polyhaven.com/a/table_mountain_2_puresky
-		//const texture = await new RGBELoader().setPath('./assets/hdr/').loadAsync('table_mountain_2_puresky_2k.hdr', (progress) => {
-		const texture = await new RGBELoader().setPath('./assets/hdr/').loadAsync('wide_street_01_2k.hdr', (progress) => {
-			//console.log("Skybox load progress", Math.round(progress.loaded / progress.total * 100) + "%");
+		const texture = await new UltraHDRLoader().setPath('./assets/ultrahdr/').loadAsync('wide_street_01_2k.jpg', (progress) => {
+			
 		});
 		texture.mapping = EquirectangularReflectionMapping;
-		//this.scene.background = new Color( 0xAA0000);
-		//this.scene.background = texture;
-		//this.scene.environment = texture;
+
 		const sky:GroundedSkybox = new GroundedSkybox(texture, 3, 100);
 		sky.receiveShadow = true;	
 		this.scene.add(sky);	

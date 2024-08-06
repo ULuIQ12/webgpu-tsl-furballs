@@ -1,13 +1,9 @@
 import { ACESFilmicToneMapping, AmbientLight, Clock, DataTexture, DirectionalLight, Mesh, MeshStandardMaterial, PerspectiveCamera, PlaneGeometry, RepeatWrapping, Scene, Vector2, Vector3 } from "three/webgpu";
-
-
-
 import { IAnimatedElement } from "./interfaces/IAnimatedElement";
 import { Furballs } from "./elements/Furballs";
 import { pass, PostProcessing, viewportTopLeft, WebGPURenderer } from "three/webgpu";
 import { OrbitControls, TrackballControls } from "three/examples/jsm/Addons.js";
 import WebGPU from "three/examples/jsm/capabilities/WebGPU.js";
-
 
 export class Root {
 
@@ -36,7 +32,7 @@ export class Root {
     }
 
     async init() {
-        
+
         this.initRenderer();
         this.initCamera();
         await this.initScene();
@@ -54,7 +50,7 @@ export class Root {
     clock: Clock = new Clock(false);
     post?: PostProcessing;
     initRenderer() {
-        
+
         if (WebGPU.isAvailable() === false) { // doesn't work with WebGL2
             throw new Error('No WebGPU support');
         }
@@ -80,34 +76,34 @@ export class Root {
     }
 
     scene: Scene = new Scene();
-    fx:Furballs;
+    fx: Furballs;
     async initScene() {
         this.fx = new Furballs(this.scene, this.camera, this.controls as OrbitControls, this.renderer!);
         await this.fx.init();
-       
+
     }
 
     postProcessing?: PostProcessing;
     initPost() {
 
-        const {scene, camera, renderer} = this;
-        
+        const { scene, camera, renderer } = this;
+
         const scenePass = pass(scene, camera);
-        const vignette = viewportTopLeft.distance( .5 ).mul( 0.75 ).clamp().oneMinus();
-        this.postProcessing = new PostProcessing( renderer!);
-        this.postProcessing.outputNode = scenePass.mul( vignette );
+        const vignette = viewportTopLeft.distance(.5).mul(0.75).clamp().oneMinus();
+        this.postProcessing = new PostProcessing(renderer!);
+        this.postProcessing.outputNode = scenePass.mul(vignette);
 
     }
 
 
 
-    onResize( event, toSize?:Vector2 ) {
-        const size:Vector2 = new Vector2(window.innerWidth, window.innerHeight);
-        if(toSize) size.copy(toSize);
+    onResize(event, toSize?: Vector2) {
+        const size: Vector2 = new Vector2(window.innerWidth, window.innerHeight);
+        if (toSize) size.copy(toSize);
 
         this.camera.aspect = size.x / size.y;
         this.camera.updateProjectionMatrix();
-        
+
         this.renderer!.setPixelRatio(1);
         this.renderer!.setSize(size.x, size.y);
         this.renderer!.domElement.style.width = `${size.x}px`;
@@ -134,31 +130,31 @@ export class Root {
         if (Root.instance == null) {
             throw new Error("Root instance not found");
         }
-        if( Root.instance.capturing ) {
-            console.log( "Already capturing")
+        if (Root.instance.capturing) {
+            console.log("Already capturing")
             return;
         }
-        
+
         (async () => {
             await Root.instance.capture();
-            console.log( "Capture done");
+            console.log("Capture done");
         })();
 
     }
 
     capturing: boolean = false;
-    savedPosition:Vector3 = new Vector3();
+    savedPosition: Vector3 = new Vector3();
     async capture() {
         try {
             this.capturing = true;
             //const resolution:Vector2 = new Vector2(4096,4096);
-            const resolution:Vector2 = new Vector2(window.innerWidth,window.innerHeight);
+            const resolution: Vector2 = new Vector2(window.innerWidth, window.innerHeight);
             this.onResize(null, resolution);
 
 
             await new Promise(resolve => setTimeout(resolve, 20));
             await this.postProcessing!.renderAsync();
-            
+
             const strMime = "image/jpeg";
             const imgData = this.renderer.domElement.toDataURL(strMime, 1.0);
             const strDownloadMime: string = "image/octet-stream";
@@ -185,7 +181,7 @@ export class Root {
             //
         }
         await new Promise(resolve => setTimeout(resolve, 10));
-       
+
         this.onResize(null);
         this.capturing = false;
     }
